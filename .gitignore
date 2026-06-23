@@ -1,0 +1,45 @@
+# Bytecode Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environnements
+.venv/
+venv/
+env/
+ENV/
+
+# Variables d'environnement
+**/.env
+
+# Logs
+*.log
+
+# Docker
+*.pid
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests / cache
+.pytest_cache/
+.mypy_cache/
+.coverage/
+htmlcov/
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# Database (si local dev plus tard)
+*.db
+
+# Data persistée (important avec ton volume docker)
+data/
