@@ -1,0 +1,120 @@
+###############
+# Workflow metadata
+###############
+name: 📊 Static Analysis
+
+
+###############
+# Displayed name of the workflow run in the GitHub Actions interface.
+# Includes the user who triggered the workflow and the analyzed branch.
+###############
+run-name: 📊 [${{ github.triggering_actor }}] Analysis of commit(s) on branch ${{ github.ref_name }}
+
+
+###############
+# Workflow triggers
+#
+# This workflow runs only on branches containing Python source code.
+#
+# - Pull requests targeting `dev` or `main` trigger a static analysis 
+#   before integration.
+# - Pushes to `dev` validate changes after feature or bug-fix merges.
+# - Pushes to `main` validate the production branch after integration.
+#
+# Branches such as `ci-cd`, `environment`, and `doc` are intentionally
+# excluded because they do not contain Python code to analyze.
+###############
+on:
+  pull_request:
+    branches:
+      - dev
+      - main
+  push:
+    branches:
+      - dev
+      - main
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+
+    ###############
+    # Maximum execution time for the job.
+    # Automatically cancels the job if it exceeds 5 minutes.
+    ###############
+    timeout-minutes: 5
+
+    steps:
+      - run: echo "Setting up Python..."
+
+      - name: Checkout code...
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: "requirements-dev.txt"
+
+      ###############
+      # Install and update the Python package manager,
+      # then install all development dependencies required
+      # for static analysis.
+      ###############
+      - run: echo "Installing dependencies..."
+      - name: Install development dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - run: echo "Starting lint analysis..."
+
+      ###############
+      # Run Ruff to perform static analysis and formatting checks on
+      # the Python source code.
+      ###############
+      - name: Lint Python
+        run: python -m ruff check app
+
+      - name: Check Python formatting
+        run: python -m ruff format --check app
+
+  tests:
+    runs-on: ubuntu-24.04
+
+    ###############
+    # Maximum execution time for the job.
+    # Automatically cancels the job if it exceeds 10 minutes.
+    ###############
+    timeout-minutes: 10
+
+    steps:
+      - run: echo "Setting up Python..."
+
+      - name: Checkout code...
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: "requirements-dev.txt"
+
+      ###############
+      # Upgrade pip and install all development dependencies 
+      # required to execute the test suite. 
+      ###############
+      - run: echo "Installing dependencies..."
+      - name: Install development dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - run: echo "Starting tests execution... "
+
+      ###############
+      # Run the project's test suite using Pytest. 
+      ###############
+      - name: Run Python tests
+        run: python -m pytest app/tests
