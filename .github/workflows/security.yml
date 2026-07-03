@@ -98,8 +98,9 @@ jobs:
       # without building the Docker image.
       ###############
       - name: Audit Docker configuration
-        uses: aquasecurity/trivy-action@v0.9.0
+        uses: aquasecurity/trivy-action@v0.33.1
         with:
           scan-type: config
           scan-ref: .
+          format: table
 
