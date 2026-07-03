@@ -16,7 +16,7 @@ run-name: 🛡️ [${{ github.triggering_actor }}] Analysis of commit(s) on bran
 #
 # This workflow runs only on branches containing Python source code.
 #
-# - Pull requests targeting `dev` or `main` trigger a static analysis 
+# - Pull requests targeting `dev` or `main` trigger a static analysis
 #   before integration.
 # - Pushes to `dev` validate changes after feature or bug-fix merges.
 # - Pushes to `main` validate the production branch after integration.
@@ -40,10 +40,10 @@ on:
   schedule:
     # 0 → minute (0 - 59)
     # 6 → hour (0 - 23)
-    # * → day of month (1 - 31) 
+    # * → day of month (1 - 31)
     # * → month (1 - 12) OR jan,feb,mar,apr ...
     # 1 → day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
-    - cron: "0 6 * * mon" 
+    - cron: "0 6 * * mon"
 
 ###############
 # Enables manual workflow execution
@@ -76,4 +76,30 @@ jobs:
         uses: pypa/gh-action-pip-audit@v1.1.0
         with:
           inputs: requirements.txt requirements-dev.txt
+
+  docker-trivy:
+    runs-on: ubuntu-24.04
+
+    ###############
+    # Maximum execution time for the job.
+    # Automatically cancels the job if it exceeds 5 minutes.
+    ###############
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - run: echo "Starting Docker image security audit..."
+
+      ###############
+      # Audit Docker configuration files for security misconfigurations.
+      # This scans the Dockerfile and related configuration files
+      # without building the Docker image.
+      ###############
+      - name: Audit Docker configuration
+        uses: aquasecurity/trivy-action@v0.9.0
+        with:
+          scan-type: config
+          scan-ref: .
 
