@@ -5,7 +5,7 @@ labels: ["bug", "triage"]
 # projects: [""]
 assignees:
   - idkLilou
-type: bug
+# type: bug
 body:
   - type: markdown
     attributes:
