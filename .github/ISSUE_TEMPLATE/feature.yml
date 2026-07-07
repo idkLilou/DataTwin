@@ -27,7 +27,7 @@ body:
     attributes:
       label: Feature name
       description: Give your feature a short and descriptive name.
-      placeholder: Example: Dark Mode
+      placeholder: Dark Mode
     validations:
       required: true
 
